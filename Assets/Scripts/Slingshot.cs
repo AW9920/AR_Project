@@ -36,8 +36,11 @@ public class Slingshot : MonoBehaviour
 
         // Default settings
         if(GetComponent<SphereCollider>() != null) this.GetComponent<SphereCollider>().radius = 0.5f;
-        //if (scaling == 0.0f) scaling = 100.0f;
 
+        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+
+        //if (scaling == 0.0f) scaling = 100.0f;
+        
         // Set boundaries
         GameObject[] obj_pillars = GameObject.FindGameObjectsWithTag("Pillar");
         pillars = new Transform[obj_pillars.Length]; 
@@ -56,9 +59,21 @@ public class Slingshot : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
+        // Get vecotr towards parent
+        else
+        {
+        Vector3 dir = transform.position - transform.parent.position;
+        Vector3 lookRot = Quaternion.LookRotation(-dir).eulerAngles;
+        transform.rotation = Quaternion.AngleAxis(lookRot.y,Vector3.up);
+        }
+    }
+
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+
         if (isPressed & sp.connectedBody != null)
         {
             DragBall();
@@ -90,8 +105,6 @@ public class Slingshot : MonoBehaviour
         else rb.position = new Vector3(min_x, init_y, new_pos.z);
 
         init_mousePos = current_mousePos;
-
-        Debug.Log(rb.position);
     }
 
 
@@ -99,7 +112,7 @@ public class Slingshot : MonoBehaviour
     {
         Vector3 current_pos = this.transform.localPosition;
 
-        if(Vector3.Magnitude(current_pos) <= 0.1f * Vector3.Magnitude(release_pos))
+        if(Vector3.Magnitude(current_pos) <= 0.25f * Vector3.Magnitude(release_pos))
         {
             Destroy(sp);
         }
@@ -113,7 +126,6 @@ public class Slingshot : MonoBehaviour
 
         init_mousePos = Input.mousePosition;
         init_y = rb.position.y;
-        Debug.Log(init_y);
     }
 
     private void OnMouseUp()
