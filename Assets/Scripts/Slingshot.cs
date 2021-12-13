@@ -122,7 +122,7 @@ public class Slingshot : MonoBehaviour
         rb.useGravity = false;
 
         init_mousePos = Input.mousePosition;
-        init_y = rb.position.y;
+        init_y = rb.transform.position.y;
     }
 
     private void OnMouseUp()
