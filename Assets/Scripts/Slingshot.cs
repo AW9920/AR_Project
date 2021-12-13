@@ -62,12 +62,9 @@ public class Slingshot : MonoBehaviour
     void Update()
     {
         // Get vecotr towards parent
-        else
-        {
         Vector3 dir = transform.position - transform.parent.position;
         Vector3 lookRot = Quaternion.LookRotation(-dir).eulerAngles;
         transform.rotation = Quaternion.AngleAxis(lookRot.y,Vector3.up);
-        }
     }
 
     // Update is called once per frame
