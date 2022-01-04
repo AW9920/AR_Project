@@ -4,16 +4,20 @@ using UnityEngine;
 
 public class Slingshot : MonoBehaviour
 {
-    public float scaling_boundary = 1.5f;
+    public float scaling_boundary = 0.75f;
 
-    private float max_x = 13f;
+    private float offset = 1f;
+    private float max_x = 15f;
     private float min_x = 0f;
-    private float max_z = 0f;
-    private float min_z = -10f;
+    private float max_z;
+    private float min_z;
+    private float startTime;
+    private float LifeTimeOfObject = 5.0f;
 
     private float init_y;
 
     private bool isPressed;
+    private bool isReleased;
     private bool isConncected;
 
     private Transform proj;
@@ -21,25 +25,28 @@ public class Slingshot : MonoBehaviour
     private SpringJoint sp;
     private Transform[] pillars;
     private SphereCollider col;
-
+    private MainGameLoop css;
     private Vector3 init_mousePos;
     private Vector3 proj_init_y;
     private Vector3 release_pos;
-    // Start is called before the first frame update
+    private Collision target;
 
     private void Awake()
     {
+        Debug.Log("Awake initialized");
+        
         // Acquire Components
         proj = GetComponent<Transform>();
         rb = GetComponent<Rigidbody>();
         sp = GetComponent<SpringJoint>();
+        css = this.GetComponentInParent<MainGameLoop>();
+
+        // Connect new spring joint
+        sp.spring = 50;
 
         // Default settings
         if(GetComponent<SphereCollider>() != null) this.GetComponent<SphereCollider>().radius = 0.5f;
-
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-
-        //if (scaling == 0.0f) scaling = 100.0f;
         
         // Set boundaries
         GameObject[] obj_pillars = GameObject.FindGameObjectsWithTag("Pillar");
@@ -57,27 +64,37 @@ public class Slingshot : MonoBehaviour
             max_z = pillars[1].position.z * scaling_boundary;
             min_z = pillars[0].position.z * scaling_boundary;
         }
+
+        //Access Main loop
+        css.proj_exist = true;
+        css.connected = true;
     }
 
     void Update()
     {
-        // Get vecotr towards parent
-        Vector3 dir = transform.position - transform.parent.position;
-        Vector3 lookRot = Quaternion.LookRotation(-dir).eulerAngles;
-        transform.rotation = Quaternion.AngleAxis(lookRot.y,Vector3.up);
+        if (isPressed)
+        {
+            // Get vector towards parent
+            Vector3 dir = transform.position - transform.parent.position;
+            transform.rotation = Quaternion.FromToRotation(Vector3.forward,dir);
+        }
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-
-        if (isPressed & sp.connectedBody != null)
+        if (isPressed && sp != null)
         {
             DragBall();
         }
-        else if (!isPressed & sp.connectedBody != null)
+        else if (isReleased && sp != null)
         {
             ReleaseBall();
+        }
+
+        if (sp == null && rb != null)
+        {
+            DestroyBall();
         }
     }
 
@@ -111,23 +128,43 @@ public class Slingshot : MonoBehaviour
 
         if(Vector3.Magnitude(current_pos) <= 0.25f * Vector3.Magnitude(release_pos))
         {
+            // start timer
+            startTime = Time.time;
+            // break connection
+            Debug.Log("Spring broken");
             Destroy(sp);
+            css.connected = false;
+        }
+    }
+
+    private void DestroyBall()
+    {
+        if((Time.time - startTime) > LifeTimeOfObject)
+        {
+            css.proj_exist = false;
+            Destroy(this.transform.gameObject);
         }
     }
 
     private void OnMouseDown()
     {
+        Debug.Log("Clicked on Ball");
         isPressed = true;
+        isReleased = false;
         rb.isKinematic = true;
         rb.useGravity = false;
 
         init_mousePos = Input.mousePosition;
         init_y = rb.transform.position.y;
+
+        transform.Translate(Vector3.forward * offset, Space.Self);
     }
 
     private void OnMouseUp()
     {
+        Debug.Log("Release Ball");
         isPressed = false;
+        isReleased = true;
         rb.isKinematic = false;
         rb.useGravity = true;
 
@@ -136,5 +173,15 @@ public class Slingshot : MonoBehaviour
         release_pos = transform.localPosition; // Position at release
         //break spring connection after a certain time
 
+    }
+
+    private void OnCollisionEnter(Collision other) 
+    {
+        if (other == target)
+        {
+            // Reinstante object life time
+            startTime = Time.time; 
+            css.isHit = true;
+        }
     }
 }
