@@ -77,10 +77,7 @@ public class BandGen : MonoBehaviour
         };
 
         // Update mesh
-        mesh.Clear();
-
-        mesh.vertices = vertices;
-        mesh.triangles = triangles;
+        UpdateMesh();
     }
     void CreateShapeM()
     {   
@@ -107,10 +104,7 @@ public class BandGen : MonoBehaviour
         };
 
         // Update mesh
-        mesh.Clear();
-
-        mesh.vertices = vertices;
-        mesh.triangles = triangles;
+        UpdateMesh();
     }
     void CreateShapeR()
     {
@@ -140,10 +134,7 @@ public class BandGen : MonoBehaviour
         };
 
         // Update mesh
-        mesh.Clear();
-
-        mesh.vertices = vertices;
-        mesh.triangles = triangles;
+        UpdateMesh();
     }
 
     void CreateShapeWhole()
@@ -173,11 +164,16 @@ public class BandGen : MonoBehaviour
         };
 
         // Update mesh
+        UpdateMesh();
+    }
+
+    void UpdateMesh()
+    {
         mesh.Clear();
 
         mesh.vertices = vertices;
         mesh.triangles = triangles;
 
-        
+        mesh.RecalculateNormals();   
     }
 }

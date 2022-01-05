@@ -12,6 +12,10 @@ TagManager:
   - BL_Anc
   - BR_Anc
   - PR_Anc
+  - b_tar
+  - y_tar
+  - r_tar
+  - stop
   layers:
   - Default
   - TransparentFX
