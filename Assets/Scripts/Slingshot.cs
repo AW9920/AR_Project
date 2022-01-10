@@ -4,8 +4,17 @@ using UnityEngine;
 
 public class Slingshot : MonoBehaviour
 {
-    public float scaling_boundary = 0.75f;
+    private string[] rand_id = new string[]
+    {
+        "red",
+        "yellow",
+        "blue"
+    };
 
+    public string id;
+
+    public float scaling_boundary = 0.75f;
+    public float dragFriction = 0.1f;
     private float offset = 1f;
     private float max_x = 15f;
     private float min_x = 0f;
@@ -13,6 +22,8 @@ public class Slingshot : MonoBehaviour
     private float min_z;
     private float startTime;
     private float LifeTimeOfObject = 5.0f;
+    private float release_dist;
+
 
     private float init_y;
 
@@ -20,6 +31,7 @@ public class Slingshot : MonoBehaviour
     private bool isReleased;
     private bool isConncected;
 
+    public Transform parent;
     private Transform proj;
     private Rigidbody rb;
     private SpringJoint sp;
@@ -28,7 +40,6 @@ public class Slingshot : MonoBehaviour
     private MainGameLoop css;
     private Vector3 init_mousePos;
     private Vector3 proj_init_y;
-    private Vector3 release_pos;
     private Collision target;
 
     private void Awake()
@@ -40,7 +51,7 @@ public class Slingshot : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         sp = GetComponent<SpringJoint>();
         css = this.GetComponentInParent<MainGameLoop>();
-
+        parent = this.transform.parent.GetComponent<Transform>();
         // Connect new spring joint
         sp.spring = 50;
 
@@ -68,6 +79,11 @@ public class Slingshot : MonoBehaviour
         //Access Main loop
         css.proj_exist = true;
         css.connected = true;
+
+        // Assign random id
+        int ran_index = Random.Range(0,3);
+        id = rand_id[ran_index];
+        Debug.Log(id);
     }
 
     void Update()
@@ -124,9 +140,13 @@ public class Slingshot : MonoBehaviour
 
     private void ReleaseBall()
     {
-        Vector3 current_pos = this.transform.localPosition;
+        // Kill build up momentum of rigidbody
+        rb.angularVelocity *= dragFriction;
+        
+        // Get Current dist to origin
+        float current_dist = Vector3.Distance(transform.position, parent.position);
 
-        if(Vector3.Magnitude(current_pos) <= 0.25f * Vector3.Magnitude(release_pos))
+        if(current_dist <= 0.1f * release_dist)
         {
             // start timer
             startTime = Time.time;
@@ -170,9 +190,7 @@ public class Slingshot : MonoBehaviour
 
         init_mousePos = Vector3.zero;
 
-        release_pos = transform.localPosition; // Position at release
-        //break spring connection after a certain time
-
+        release_dist = Vector3.Distance(parent.position, transform.position); // Position at release
     }
 
     private void OnCollisionEnter(Collision other) 

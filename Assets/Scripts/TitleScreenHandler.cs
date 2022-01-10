@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class TitleScreenHandler : MonoBehaviour
 {
-    private bool isStart = false;
-    private bool isScore = false;
-    private bool isQuit = false;
     private float startTime;
     public float speed = 1.0f;
 
@@ -39,8 +36,6 @@ public class TitleScreenHandler : MonoBehaviour
 
     public void startGame()
     {
-        isStart  = true;
-
         MoveOutOfScreenSettings();
 
         fade.FadeToScene(1);
@@ -48,12 +43,10 @@ public class TitleScreenHandler : MonoBehaviour
 
     public void Scoreboard()
     {
-        isScore = true;
     }
 
     public void QuitGame()
     {
-        isQuit = true;
     }
 
     void MoveOutOfScreenSettings()

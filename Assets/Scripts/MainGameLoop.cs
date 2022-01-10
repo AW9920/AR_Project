@@ -1,9 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MainGameLoop : MonoBehaviour
 {
+    private int points = 0;
+    public float startScoreTime;
+    public string target_id;
     private GameObject proj;
     private static Quaternion rot;
     private static Vector3 pos;
@@ -17,6 +21,7 @@ public class MainGameLoop : MonoBehaviour
     private GameObject projectile;
     public GameObject prefab;
     private GameObject obj;
+    public Text scoreCount;
     
     void Awake()
     {
@@ -31,6 +36,7 @@ public class MainGameLoop : MonoBehaviour
             InitiateProjectile();
 
         // Get script
+        scoreCount.text = "0";
     }
 
     // Update is called once per frame
@@ -41,6 +47,26 @@ public class MainGameLoop : MonoBehaviour
         {
             // Create new projectile & add to hierarchy
             InitiateProjectile();
+            //Reset score timer
+            startScoreTime = Time.time;
+        }
+
+        if(isHit)
+        {
+            if (target_id == "blue")
+            {
+                
+            }
+
+            else if (target_id == "yellow")
+            {
+
+            }
+
+            else if (target_id == "red")
+            {
+
+            }
         }
     }
 
@@ -55,10 +81,25 @@ public class MainGameLoop : MonoBehaviour
         new_proj.transform.localScale = new Vector3 (1f, 1f, 1f);
         new_proj.transform.SetParent(this.transform);
         new_proj.name = "Projectile";
+        new_proj.tag = "projectile";
 
         // Add components
         new_proj.AddComponent<SpringJoint>().connectedBody = GetComponent<Rigidbody>();
         new_proj.AddComponent<Slingshot>();
         proj_exist = true;
+    }
+
+    public void IncreasePointCount(bool correct)
+    {
+        if (correct)
+        {
+            float timeDiff = Time.time - startScoreTime;
+            //Add 100 / (time diff) to point count
+            int point_add = (int)100f / (int)timeDiff;
+
+            points += point_add; 
+
+            scoreCount.text = points.ToString();
+        }
     }
 }

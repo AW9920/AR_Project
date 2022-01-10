@@ -5,7 +5,6 @@ TagManager:
   serializedVersion: 2
   tags:
   - Pillar
-  - Projectile
   - origin
   - bullet
   - PL_Anc
@@ -16,6 +15,7 @@ TagManager:
   - y_tar
   - r_tar
   - stop
+  - projectile
   layers:
   - Default
   - TransparentFX
