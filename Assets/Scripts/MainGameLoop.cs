@@ -7,6 +7,7 @@ public class MainGameLoop : MonoBehaviour
 {
     private int points = 0;
     public float startScoreTime;
+    [HideInInspector]
     public string target_id;
     private GameObject proj;
     private static Quaternion rot;

@@ -83,7 +83,8 @@ public class Slingshot : MonoBehaviour
         // Assign random id
         int ran_index = Random.Range(0,3);
         id = rand_id[ran_index];
-        Debug.Log(id);
+        
+        Debug.Log(id);   
     }
 
     void Update()
