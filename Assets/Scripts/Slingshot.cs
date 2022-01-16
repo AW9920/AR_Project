@@ -10,7 +10,8 @@ public class Slingshot : MonoBehaviour
         "yellow",
         "blue"
     };
-
+    
+    [HideInInspector]
     public string id;
 
     public float scaling_boundary = 0.75f;
@@ -21,7 +22,7 @@ public class Slingshot : MonoBehaviour
     private float max_z;
     private float min_z;
     private float startTime;
-    private float LifeTimeOfObject = 5.0f;
+    private float LifeTimeOfObject = 3.0f;
     private float release_dist;
 
 
@@ -57,7 +58,7 @@ public class Slingshot : MonoBehaviour
 
         // Default settings
         if(GetComponent<SphereCollider>() != null) this.GetComponent<SphereCollider>().radius = 0.5f;
-        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        // rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
         
         // Set boundaries
         GameObject[] obj_pillars = GameObject.FindGameObjectsWithTag("Pillar");
@@ -75,7 +76,7 @@ public class Slingshot : MonoBehaviour
             max_z = pillars[1].position.z * scaling_boundary;
             min_z = pillars[0].position.z * scaling_boundary;
         }
-
+        Debug.Log(new Vector2(min_z, max_z));
         //Access Main loop
         css.proj_exist = true;
         css.connected = true;
@@ -117,24 +118,46 @@ public class Slingshot : MonoBehaviour
 
     private void DragBall()
     {
+        // Convert mouse movement info
         Vector3 current_mousePos = Input.mousePosition;
-        Vector3 delta = (current_mousePos - init_mousePos) * Time.deltaTime * Mathf.Exp(1);
+        Vector3 delta = (current_mousePos - init_mousePos) * Time.deltaTime * Mathf.Exp(Mathf.Sqrt(3));
 
+        // Compute new position beforehand
         Vector3 new_pos = rb.position + new Vector3(-delta.y, 0f, delta.x);
 
+        // Check barrier in x-dir
         if (new_pos.x <= max_x & new_pos.x >= min_x)
         {
-            if (new_pos.z <= max_z & new_pos.z >= min_z) rb.position = new_pos;
-
-            else if (new_pos.z > max_z) rb.position = new Vector3(new_pos.x, init_y, max_z);
-
-            else rb.position = new Vector3(new_pos.x, init_y, min_z);
+            rb.position = new Vector3(new_pos.x, init_y, rb.position.z);    
         }
 
-        else if (new_pos.x > max_x) rb.position = new Vector3(max_x, init_y, new_pos.z);
+        else if (new_pos.x > max_x) 
+        {
+            rb.position = new Vector3(max_x, init_y, rb.position.z);
+        }
 
-        else rb.position = new Vector3(min_x, init_y, new_pos.z);
+        else 
+        {
+            rb.position = new Vector3(min_x, init_y, rb.position.z);
+        }
 
+        // Check barrier in z-dir
+        if (new_pos.z <= max_z & new_pos.z >= min_z) 
+        {
+            rb.position = new Vector3(rb.position.x, init_y, new_pos.z);
+        }
+
+        else if (new_pos.z > max_z)
+        {
+            rb.position = new Vector3(rb.position.x, init_y, max_z);
+        }
+
+        else 
+        {
+            rb.position = new Vector3(rb.position.x, init_y, min_z);
+        }
+
+        // Update mouse position
         init_mousePos = current_mousePos;
     }
 
@@ -169,29 +192,35 @@ public class Slingshot : MonoBehaviour
 
     private void OnMouseDown()
     {
+        // Change properties of rigidbody
         Debug.Log("Clicked on Ball");
         isPressed = true;
         isReleased = false;
         rb.isKinematic = true;
         rb.useGravity = false;
 
+        // Get mouse position
         init_mousePos = Input.mousePosition;
         init_y = rb.transform.position.y;
 
+        // Default distance to origin on interaction. Prevents unwanted movement.
         transform.Translate(Vector3.forward * offset, Space.Self);
     }
 
     private void OnMouseUp()
     {
+        // Change properties of rigidbody
         Debug.Log("Release Ball");
         isPressed = false;
         isReleased = true;
         rb.isKinematic = false;
         rb.useGravity = true;
 
+        // Delete mouse position
         init_mousePos = Vector3.zero;
 
-        release_dist = Vector3.Distance(parent.position, transform.position); // Position at release
+        // Position at release
+        release_dist = Vector3.Distance(parent.position, transform.position);
     }
 
     private void OnCollisionEnter(Collision other) 
@@ -201,6 +230,11 @@ public class Slingshot : MonoBehaviour
             // Reinstante object life time
             startTime = Time.time; 
             css.isHit = true;
+        }
+
+        else if (other != target)
+        {
+            css.isHit = false;
         }
     }
 }

@@ -109,6 +109,7 @@ public class HitDetector : MonoBehaviour
         // Prevent random direction into collider
         rand_dir.x = Mathf.Abs(rand_dir.x);
         rand_dir.y = Mathf.Abs(rand_dir.y);
+        rand_dir.y = Mathf.Clamp(rand_dir.y, 0.0f, 0.1f);
 
         // Reset velocity of rb
         rb.velocity *= 0f;

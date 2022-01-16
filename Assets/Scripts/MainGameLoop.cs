@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class MainGameLoop : MonoBehaviour
 {
     private int points = 0;
+    public int penelty = 10;
     public float startScoreTime;
     [HideInInspector]
     public string target_id;
@@ -102,5 +103,12 @@ public class MainGameLoop : MonoBehaviour
 
             scoreCount.text = points.ToString();
         }
+    }
+
+    public void ReducePointCount()
+    {
+        points -= penelty; 
+
+        scoreCount.text = points.ToString();
     }
 }

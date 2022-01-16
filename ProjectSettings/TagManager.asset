@@ -16,6 +16,7 @@ TagManager:
   - r_tar
   - stop
   - projectile
+  - spawn
   layers:
   - Default
   - TransparentFX
