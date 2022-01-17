@@ -12,11 +12,11 @@ TagManager:
   - BR_Anc
   - PR_Anc
   - b_tar
-  - y_tar
   - r_tar
   - stop
   - projectile
   - spawn
+  - g_tar
   layers:
   - Default
   - TransparentFX

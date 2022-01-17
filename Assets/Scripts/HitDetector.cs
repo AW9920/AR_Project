@@ -23,7 +23,7 @@ public class HitDetector : MonoBehaviour
 
         if(tag == "b_tar") id = "blue";
 
-        else if(tag == "y_tar") id = "yellow";
+        else if(tag == "g_tar") id = "green";
 
         else if(tag == "r_tar") id = "red";
 
@@ -63,7 +63,7 @@ public class HitDetector : MonoBehaviour
         {
             main.isHit = true;
 
-            main.target_id = id;
+            main.SetTargetID(id);
 
             string col_id = css.id;
 

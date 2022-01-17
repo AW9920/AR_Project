@@ -9,7 +9,7 @@ public class MainGameLoop : MonoBehaviour
     public int penelty = 10;
     public float startScoreTime;
     [HideInInspector]
-    public string target_id;
+    private string target_id;
     private GameObject proj;
     private static Quaternion rot;
     private static Vector3 pos;
@@ -60,7 +60,7 @@ public class MainGameLoop : MonoBehaviour
                 
             }
 
-            else if (target_id == "yellow")
+            else if (target_id == "green")
             {
 
             }
@@ -110,5 +110,15 @@ public class MainGameLoop : MonoBehaviour
         points -= penelty; 
 
         scoreCount.text = points.ToString();
+    }
+
+    public void SetTargetID(string id)
+    {
+        target_id = id;
+    }
+
+    public string GetTargetID()
+    {
+        return target_id;
     }
 }

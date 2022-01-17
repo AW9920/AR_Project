@@ -7,7 +7,7 @@ public class Slingshot : MonoBehaviour
     private string[] rand_id = new string[]
     {
         "red",
-        "yellow",
+        "green",
         "blue"
     };
     
@@ -76,7 +76,7 @@ public class Slingshot : MonoBehaviour
             max_z = pillars[1].position.z * scaling_boundary;
             min_z = pillars[0].position.z * scaling_boundary;
         }
-        Debug.Log(new Vector2(min_z, max_z));
+
         //Access Main loop
         css.proj_exist = true;
         css.connected = true;
@@ -84,6 +84,8 @@ public class Slingshot : MonoBehaviour
         // Assign random id
         int ran_index = Random.Range(0,3);
         id = rand_id[ran_index];
+        // Communicate to main loop script
+        css.SetTargetID(id);
         
         Debug.Log(id);   
     }
