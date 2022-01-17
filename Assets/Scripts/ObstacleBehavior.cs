@@ -17,7 +17,7 @@ public class ObstacleBehavior : MonoBehaviour
     private float startTime;
     private float LifeTimeOfObject = 1.0f;
     private float maxDist;
-    public float move_speed = 15f;
+    public float move_speed = 20f;
     private float speed_variation;
     private bool isHit;
 
@@ -27,7 +27,7 @@ public class ObstacleBehavior : MonoBehaviour
         // Specify variables
         maxDist = Vector3.Distance(transform.position, endPoint.position);
         initPos = this.transform.position;
-        speed_variation = Random.Range(0,20);
+        speed_variation = Random.Range(0,4) * 5;
 
         // Get Components
         CapsuleCollider col = GetComponent<CapsuleCollider>();
