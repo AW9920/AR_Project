@@ -5,12 +5,14 @@ using UnityEngine.UI;
 
 public class MainGameLoop : MonoBehaviour
 {
+    public int lifeCount = 3;
     private int points = 0;
     public int penelty = 10;
     public float startScoreTime;
+    public float GameOverTime = 0.5f;
+    private float startTime;
     [HideInInspector]
     private string target_id;
-    private GameObject proj;
     private static Quaternion rot;
     private static Vector3 pos;
 
@@ -19,11 +21,16 @@ public class MainGameLoop : MonoBehaviour
     [HideInInspector]
     public bool connected = false;
     [HideInInspector]
+    public bool isOver = false;
+    [HideInInspector]
     public bool isHit;
-    private GameObject projectile;
     public GameObject prefab;
     private GameObject obj;
     public Text scoreCount;
+    public Text GameOverText;
+    public SceneChanger scene_css;
+    public TargetIndicator[] sign_css;
+    public Image[] hearts;
     
     void Awake()
     {
@@ -39,13 +46,14 @@ public class MainGameLoop : MonoBehaviour
 
         // Get script
         scoreCount.text = "0";
+        GameOverText.enabled = false;
     }
 
     // Update is called once per frame
     void Update()
     {   
         // Instantiate new projectile
-        if (!proj_exist)
+        if (!proj_exist & !isOver)
         {
             // Create new projectile & add to hierarchy
             InitiateProjectile();
@@ -53,23 +61,25 @@ public class MainGameLoop : MonoBehaviour
             startScoreTime = Time.time;
         }
 
-        if(isHit)
-        {
-            if (target_id == "blue")
+        if (isOver)
+        {  
+            // Destroy everything
+            destroyAllObjects();
+
+            // Change glow to red
+            for(int i = 0; i < sign_css.Length; i++)
             {
-                
+                Color color = Color.red;
+                sign_css[i].setSignColor(color);
             }
 
-            else if (target_id == "green")
+            // Change scene after 2s
+            if((Time.time - startTime) > GameOverTime)
             {
-
-            }
-
-            else if (target_id == "red")
-            {
-
+                scene_css.FadeToScene(0);
             }
         }
+
     }
 
     protected void InitiateProjectile()
@@ -105,6 +115,21 @@ public class MainGameLoop : MonoBehaviour
         }
     }
 
+    private void destroyAllObjects()
+    {
+        GameObject[] obstacles = GameObject.FindGameObjectsWithTag("obst");
+        for(int i = 0; i < obstacles.Length; i++)
+        {
+            Destroy(obstacles[i]);
+        }
+
+        GameObject[] proj = GameObject.FindGameObjectsWithTag("projectile");
+        for(int i =0; i < proj.Length; i++)
+        {
+            Destroy(proj[i]);
+        }
+    }
+
     public void ReducePointCount()
     {
         points -= penelty; 
@@ -120,5 +145,22 @@ public class MainGameLoop : MonoBehaviour
     public string GetTargetID()
     {
         return target_id;
+    }
+
+    public void decreaseLifeCount()
+    {
+        // Remove Heart from UI
+        hearts[lifeCount-1].enabled = false;
+
+        // Decrease Life Count
+        lifeCount -= 1;
+
+        if(lifeCount == 0)
+        {
+            // Switch to GameOver state
+            isOver = true;
+            GameOverText.enabled = true;
+            startTime = Time.time;
+        }
     }
 }

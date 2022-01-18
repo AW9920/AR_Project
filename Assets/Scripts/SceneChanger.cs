@@ -7,7 +7,7 @@ public class SceneChanger : MonoBehaviour
 {
     public Animator animator;
 
-    public int SceneToLoad;
+    private int SceneToLoad;
 
     public void FadeToScene(int levelIndex)
     {

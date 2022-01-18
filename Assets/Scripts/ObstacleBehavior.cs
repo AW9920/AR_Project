@@ -110,6 +110,8 @@ public class ObstacleBehavior : MonoBehaviour
 
             // Reduce Point count
             main.ReducePointCount();
+            //Decrease Life Count
+            main.decreaseLifeCount();
 
             // Initiate Timer
             isHit = true;

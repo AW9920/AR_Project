@@ -28,7 +28,10 @@ public class ObstacleHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!isPresent)
+        // Check for GameOver condition
+        bool isOver = main.isOver;
+
+        if(!isPresent & !isOver)
         {
             if((Time.time - startTime) >= randSpawnTime)
             {
@@ -47,6 +50,7 @@ public class ObstacleHandler : MonoBehaviour
         // Instantiate object at spawn point. Set properties
         GameObject new_obst =  Instantiate(obstacle, pos, rot);
         new_obst.transform.SetParent(this.transform);
+        new_obst.tag = "obst";
         ObstacleBehavior css = new_obst.GetComponent<ObstacleBehavior>();
         css.main = main;  // pass on main loop reference
         css.endPoint = target;

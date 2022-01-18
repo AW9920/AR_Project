@@ -20,16 +20,24 @@ public class BandGen : MonoBehaviour
     // Main scipt
     private MainGameLoop main;
     // Start is called before the first frame update
-    void Update()
-    {
-        // Get Ancor objects (Prefabs instantiated at startup)
-        Anc_PL = GameObject.FindWithTag("PL_Anc");
-        Anc_PR = GameObject.FindWithTag("PR_Anc");
-        Anc_BL = GameObject.FindWithTag("BL_Anc");
-        Anc_BR = GameObject.FindWithTag("BR_Anc");
 
+    private void Start() 
+    {
         // Get Main Loop script
         main = this.GetComponent<MainGameLoop>();
+
+        // Get Pillar ancors
+        Anc_PL = GameObject.FindWithTag("PL_Anc");
+        Anc_PR = GameObject.FindWithTag("PR_Anc");
+    }
+    void Update()
+    {
+        if(Anc_BL == null | Anc_BR == null)
+        {
+            // Get Ancor objects (Prefabs instantiated at startup)
+            Anc_BL = GameObject.FindWithTag("BL_Anc");
+            Anc_BR = GameObject.FindWithTag("BR_Anc");
+        }
 
         if (main.connected)
         {
@@ -37,13 +45,13 @@ public class BandGen : MonoBehaviour
             CreateShapeM();
             CreateShapeR();
         }
-        else if (!main.connected)
+        else if (!main.connected | main.isOver)
         {
-            if((Anc_BL.GetComponent<MeshFilter>().mesh != null) && (Anc_PR.GetComponent<MeshFilter>().mesh != null))
+            if(Anc_BL != null)
             {
                 Anc_BL.GetComponent<MeshFilter>().mesh = null;
-                Anc_PR.GetComponent<MeshFilter>().mesh = null;
             }
+            Anc_PR.GetComponent<MeshFilter>().mesh = null;
             
             CreateShapeWhole();
         }

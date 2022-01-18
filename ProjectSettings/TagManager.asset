@@ -17,6 +17,7 @@ TagManager:
   - projectile
   - spawn
   - g_tar
+  - obst
   layers:
   - Default
   - TransparentFX
