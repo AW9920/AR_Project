@@ -31,6 +31,8 @@ public class MainGameLoop : MonoBehaviour
     public SceneChanger scene_css;
     public TargetIndicator[] sign_css;
     public Image[] hearts;
+    [SerializeField]
+    private Camera cam;
     
     void Awake()
     {
@@ -90,14 +92,27 @@ public class MainGameLoop : MonoBehaviour
 
         // Instantiate new projectile & add to hierarchy
         GameObject new_proj =  Instantiate(obj, pos, rot);
-        new_proj.transform.localScale = new Vector3 (1f, 1f, 1f);
         new_proj.transform.SetParent(this.transform);
+        new_proj.transform.localScale = new Vector3 (1f, 1f, 1f);
         new_proj.name = "Projectile";
         new_proj.tag = "projectile";
 
         // Add components
         new_proj.AddComponent<SpringJoint>().connectedBody = GetComponent<Rigidbody>();
         new_proj.AddComponent<Slingshot>();
+        new_proj.GetComponent<Slingshot>().cam = cam;
+
+        // Attach Main Game Loop script to specific object
+        GameObject[] ancs = GameObject.FindGameObjectsWithTag("ancor");
+        for(int i = 0; i < ancs.Length; i++)
+        {
+            BandGen rubber_css = ancs[i].GetComponent<BandGen>();
+            if(rubber_css != null)
+            {
+                rubber_css.main = GetComponent<MainGameLoop>();
+            }
+        }
+
         proj_exist = true;
     }
 

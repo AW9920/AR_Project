@@ -7,10 +7,6 @@ TagManager:
   - Pillar
   - origin
   - bullet
-  - PL_Anc
-  - BL_Anc
-  - BR_Anc
-  - PR_Anc
   - b_tar
   - r_tar
   - stop
@@ -18,6 +14,7 @@ TagManager:
   - spawn
   - g_tar
   - obst
+  - ancor
   layers:
   - Default
   - TransparentFX

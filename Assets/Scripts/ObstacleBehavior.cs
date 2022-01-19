@@ -135,7 +135,10 @@ public class ObstacleBehavior : MonoBehaviour
         ObstacleHandler handler_css = gameObject.GetComponentInParent<ObstacleHandler>(); 
 
         // Change variable states
-        handler_css.isPresent = false;
-        handler_css.ResetSpawnTimeOnDestroy(true); 
+        if(handler_css != null)
+        {
+            handler_css.isPresent = false;
+            handler_css.ResetSpawnTimeOnDestroy(true); 
+        }
     }
 }

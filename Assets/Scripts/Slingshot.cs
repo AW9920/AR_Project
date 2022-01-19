@@ -16,8 +16,8 @@ public class Slingshot : MonoBehaviour
 
     public float scaling_boundary = 0.75f;
     public float dragFriction = 0.1f;
-    private float offset = 1f;
-    private float max_x = 15f;
+    private float offset = 0.1f;
+    private float max_x = 2f;
     private float min_x = 0f;
     private float max_z;
     private float min_z;
@@ -32,6 +32,8 @@ public class Slingshot : MonoBehaviour
     private bool isReleased;
     private bool isConncected;
 
+    [HideInInspector]
+    public Camera cam;
     public Transform parent;
     private Transform proj;
     private Rigidbody rb;
@@ -55,12 +57,12 @@ public class Slingshot : MonoBehaviour
         parent = this.transform.parent.GetComponent<Transform>();
         // Connect new spring joint
         sp.spring = 50;
-	rb.useGravity = false;
-	rb.isKinematic = true;
+	    rb.useGravity = false;
+	    rb.isKinematic = true;
 
         // Default settings
         if(GetComponent<SphereCollider>() != null) this.GetComponent<SphereCollider>().radius = 0.5f;
-        // rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        //rb.constraints = RigidbodyConstraints.FreezeRotationX;
 
         // Set boundaries
         GameObject[] obj_pillars = GameObject.FindGameObjectsWithTag("Pillar");
@@ -87,9 +89,7 @@ public class Slingshot : MonoBehaviour
         int ran_index = Random.Range(0,3);
         id = rand_id[ran_index];
         // Communicate to main loop script
-        css.SetTargetID(id);
-        
-        Debug.Log(id);   
+        css.SetTargetID(id);  
     }
 
     void Update()
@@ -122,12 +122,13 @@ public class Slingshot : MonoBehaviour
 
     private void DragBall()
     {
-        // Convert mouse movement info
-        Vector3 current_mousePos = Input.mousePosition;
-        Vector3 delta = (current_mousePos - init_mousePos) * Time.deltaTime * Mathf.Exp(Mathf.Sqrt(3));
+        // Convert mouse movement info relativ to Camera transform
+        Vector3 current_mousePos = cam.transform.InverseTransformPoint(Input.mousePosition);
+        Vector3 delta = (current_mousePos - init_mousePos) * Time.deltaTime;
+        Debug.Log(delta);
 
         // Compute new position beforehand
-        Vector3 new_pos = rb.position + new Vector3(-delta.y, 0f, delta.x);
+        Vector3 new_pos = rb.position + new Vector3(-delta.y, 0f, -delta.z);
 
         // Check barrier in x-dir
         if (new_pos.x <= max_x & new_pos.x >= min_x)
