@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -55,11 +55,13 @@ public class Slingshot : MonoBehaviour
         parent = this.transform.parent.GetComponent<Transform>();
         // Connect new spring joint
         sp.spring = 50;
+	rb.useGravity = false;
+	rb.isKinematic = true;
 
         // Default settings
         if(GetComponent<SphereCollider>() != null) this.GetComponent<SphereCollider>().radius = 0.5f;
         // rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-        
+
         // Set boundaries
         GameObject[] obj_pillars = GameObject.FindGameObjectsWithTag("Pillar");
         pillars = new Transform[obj_pillars.Length]; 
