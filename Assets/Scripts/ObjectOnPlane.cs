@@ -5,9 +5,12 @@ using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 
 [RequireComponent(typeof(ARRaycastManager))]
+[RequireComponent(typeof(ARPlaneManager))]
+
 public class ObjectOnPlane : MonoBehaviour
 {
     private ARRaycastManager raycastMang;
+    private ARPlaneManager planeManager;
     private GameObject spawnedObject;
 
     public GameObject PlaceablePrefab;
@@ -17,6 +20,7 @@ public class ObjectOnPlane : MonoBehaviour
     private void Awake()
     {
         raycastMang = GetComponent<ARRaycastManager>();
+        planeManager = GetComponent<ARPlaneManager>();
     }
 
     private void Update()
@@ -32,12 +36,14 @@ public class ObjectOnPlane : MonoBehaviour
             if (spawnedObject == null)
             {
                 spawnedObject = Instantiate(PlaceablePrefab, hitPos.position, hitPos.rotation);
+                SetAllPlanesActive(false);
             }
-            else
+            
+           /* else
             {
                 spawnedObject.transform.position = hitPos.position;
                 spawnedObject.transform.rotation = hitPos.rotation;
-            }
+            }*/
 
         }
     }
@@ -54,4 +60,11 @@ public class ObjectOnPlane : MonoBehaviour
         return false;
     }
 
+    private void SetAllPlanesActive(bool value)
+    {
+        foreach(var plane in planeManager.trackables)
+        {
+            plane.gameObject.SetActive(value);
+        }
+    }
 }

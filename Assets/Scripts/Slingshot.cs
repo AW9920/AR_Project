@@ -123,12 +123,12 @@ public class Slingshot : MonoBehaviour
     private void DragBall()
     {
         // Convert mouse movement info relativ to Camera transform
-        Vector3 current_mousePos = cam.transform.InverseTransformPoint(Input.mousePosition);
+        Vector3 current_mousePos = Input.mousePosition;
         Vector3 delta = (current_mousePos - init_mousePos) * Time.deltaTime;
         Debug.Log(delta);
 
         // Compute new position beforehand
-        Vector3 new_pos = rb.position + new Vector3(-delta.y, 0f, -delta.z);
+        Vector3 new_pos = rb.position + new Vector3(-delta.y, 0f, delta.x);
 
         // Check barrier in x-dir
         if (new_pos.x <= max_x & new_pos.x >= min_x)
