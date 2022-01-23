@@ -14,11 +14,12 @@ public class Slingshot : MonoBehaviour
     [HideInInspector]
     public string id;
 
-    public float scaling_boundary = 0.75f;
+    public float scaling_boundary = 1.5f;
     public float dragFriction = 0.1f;
-    private float offset = 0.1f;
+    [SerializeField]
+    private float offset = 0.2f;
     private float max_x = 2f;
-    private float min_x = 0f;
+    private float min_x = -0.9f;
     private float max_z;
     private float min_z;
     private float startTime;
@@ -125,7 +126,6 @@ public class Slingshot : MonoBehaviour
         // Convert mouse movement info relativ to Camera transform
         Vector3 current_mousePos = Input.mousePosition;
         Vector3 delta = (current_mousePos - init_mousePos) * Time.deltaTime;
-        Debug.Log(delta);
 
         // Compute new position beforehand
         Vector3 new_pos = rb.position + new Vector3(-delta.y, 0f, delta.x);
@@ -199,6 +199,7 @@ public class Slingshot : MonoBehaviour
     {
         // Change properties of rigidbody
         Debug.Log("Clicked on Ball");
+        rb.constraints = default;
         isPressed = true;
         isReleased = false;
         rb.isKinematic = true;
@@ -216,6 +217,7 @@ public class Slingshot : MonoBehaviour
     {
         // Change properties of rigidbody
         Debug.Log("Release Ball");
+        rb.constraints = RigidbodyConstraints.FreezeRotationX;
         isPressed = false;
         isReleased = true;
         rb.isKinematic = false;
