@@ -35,7 +35,7 @@ public class ObjectOnPlane : MonoBehaviour
             var hitPos = s_Hits[0].pose;
             if (spawnedObject == null)
             {
-                spawnedObject = Instantiate(PlaceablePrefab, hitPos.position, hitPos.rotation);
+                spawnedObject = Instantiate(PlaceablePrefab, hitPos.position, Quaternion.identity);
                 SetAllPlanesActive(false);
             }
             
