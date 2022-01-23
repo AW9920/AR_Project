@@ -103,13 +103,13 @@ public class HitDetector : MonoBehaviour
 
     private void RepelOnHit(GameObject obj, float velocity)
     {
-        Vector3 rand_dir = Random.insideUnitCircle.normalized;
+        Vector2 rand = Random.insideUnitCircle.normalized;
         Rigidbody rb = obj.GetComponent<Rigidbody>();
 
         // Prevent random direction into collider
-        rand_dir.x = Mathf.Abs(rand_dir.x);
-        rand_dir.y = Mathf.Abs(rand_dir.y);
-        rand_dir.y = Mathf.Clamp(rand_dir.y, 0.0f, 0.1f);
+        rand.y = Mathf.Abs(rand.y);
+
+        Vector3 rand_dir = new Vector3(rand.x, 0.1f, rand.y) * (-1);
 
         // Reset velocity of rb
         rb.velocity *= 0f;
@@ -120,7 +120,7 @@ public class HitDetector : MonoBehaviour
         // Add force to rigidbody
         rb.AddForce(FlyOff_force, ForceMode.VelocityChange);
 
-        Debug.DrawRay(this.transform.position, rand_dir * 100f);
+        Debug.DrawRay(obj.transform.position, rand_dir * 100f, Color.red, 5.0f);
         Debug.Log(rand_dir);
     }
 }

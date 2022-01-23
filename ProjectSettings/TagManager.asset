@@ -15,6 +15,7 @@ TagManager:
   - g_tar
   - obst
   - ancor
+  - scene_handler
   layers:
   - Default
   - TransparentFX

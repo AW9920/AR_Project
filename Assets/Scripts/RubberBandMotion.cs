@@ -40,7 +40,9 @@ public class RubberBandMotion : MonoBehaviour
         float length = dir.magnitude;
 
         // Rotate towards Ancor
-        this.transform.rotation = Quaternion.FromToRotation(Vector3.forward, dir);
+        Quaternion rot = Quaternion.FromToRotation(Vector3.forward, dir);
+        rot.eulerAngles = new Vector3(rot.eulerAngles.x, rot.eulerAngles.y, 0f);
+        this.transform.rotation = rot;
 
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
@@ -84,6 +86,7 @@ public class RubberBandMotion : MonoBehaviour
         // Vector Pillar left to Bed right
         Vector3 dir = transform.parent.InverseTransformPoint(op_Pillar.position) - transform.parent.InverseTransformPoint(transform.position);
         float length = dir.magnitude;
+        //Debug.Log(length);
 
         transform.rotation = Quaternion.identity;
 
@@ -91,19 +94,19 @@ public class RubberBandMotion : MonoBehaviour
         GetComponent<MeshFilter>().mesh = mesh;
 
         // Determine direction to render mesh
-        Vector3 relative = Vector3.Scale(Vector3.forward, dir).normalized;
+        Vector3 relative = Vector3.Scale(Vector3.right, dir).normalized;
 
         // Create Meshes
         vertices = new Vector3[]
         {
             new Vector3(0, -width/2, 0),
             new Vector3(0, width/2, 0),
-            new Vector3(0, -width/2, length * relative.z),
-            new Vector3(0, width/2, length * relative.z)
+            new Vector3(length * relative.x, -width/2, 0),
+            new Vector3(length * relative.x, width/2, 0)
         };
 
         // flip array if rendered against z-axis
-        if(relative.z > 0)
+        if(relative.x > 0)
         {
             triangles = new int[]
             {

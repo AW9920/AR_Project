@@ -49,6 +49,9 @@ public class MainGameLoop : MonoBehaviour
         // Get script
         scoreCount.text = "0";
         GameOverText.enabled = false;
+
+        // Attach Scene handler
+        scene_css = GameObject.FindGameObjectWithTag("scene_handler").GetComponent<SceneChanger>();
     }
 
     // Update is called once per frame
@@ -87,7 +90,7 @@ public class MainGameLoop : MonoBehaviour
     protected void InitiateProjectile()
     {
         //Quaternion rot_z = Quaternion.AngleAxis(90f, Vector3.up);
-        Quaternion rot = Quaternion.AngleAxis(90f,Vector3.up);
+        Quaternion rot = Quaternion.identity;
         Vector3 pos = this.transform.position;
 
         // Instantiate new projectile & add to hierarchy

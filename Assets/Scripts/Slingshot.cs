@@ -15,16 +15,18 @@ public class Slingshot : MonoBehaviour
     public string id;
 
     public float scaling_boundary = 1.5f;
-    public float dragFriction = 0.1f;
+    public float dragFriction = 0.0f;
     [SerializeField]
     private float offset = 0.2f;
-    private float max_x = 2f;
-    private float min_x = -0.9f;
-    private float max_z;
-    private float min_z;
+    private float max_z = 0.0f;
+    private float min_z = -2.0f;
+    private float max_x;
+    private float min_x;
     private float startTime;
     private float LifeTimeOfObject = 3.0f;
     private float release_dist;
+    [SerializeField]
+    private float speed = 1.0f;
 
 
     private float init_y;
@@ -57,7 +59,7 @@ public class Slingshot : MonoBehaviour
         css = this.GetComponentInParent<MainGameLoop>();
         parent = this.transform.parent.GetComponent<Transform>();
         // Connect new spring joint
-        sp.spring = 50;
+        sp.spring = 100;
 	    rb.useGravity = false;
 	    rb.isKinematic = true;
 
@@ -71,16 +73,17 @@ public class Slingshot : MonoBehaviour
         for(int i = 0; i < pillars.Length; i++) 
             pillars[i] = obj_pillars[i].GetComponent<Transform>();
         
-        if(pillars[0].position.z > pillars[1].position.z)
+        if(pillars[0].position.x > pillars[1].position.x)
         {
-            max_z = pillars[0].position.z * scaling_boundary;
-            min_z = pillars[1].position.z * scaling_boundary;
+            max_x = pillars[0].position.x * scaling_boundary;
+            min_x = pillars[1].position.x * scaling_boundary;
         }
         else
         {
-            max_z = pillars[1].position.z * scaling_boundary;
-            min_z = pillars[0].position.z * scaling_boundary;
+            max_x = pillars[1].position.x * scaling_boundary;
+            min_x = pillars[0].position.x * scaling_boundary;
         }
+        Debug.Log(new Vector2(min_x,max_x));
 
         //Access Main loop
         css.proj_exist = true;
@@ -99,7 +102,7 @@ public class Slingshot : MonoBehaviour
         {
             // Get vector towards parent
             Vector3 dir = transform.position - transform.parent.position;
-            transform.rotation = Quaternion.FromToRotation(Vector3.forward,dir);
+            transform.rotation = Quaternion.FromToRotation(-Vector3.forward, dir);
         }
     }
 
@@ -125,10 +128,11 @@ public class Slingshot : MonoBehaviour
     {
         // Convert mouse movement info relativ to Camera transform
         Vector3 current_mousePos = Input.mousePosition;
-        Vector3 delta = (current_mousePos - init_mousePos) * Time.deltaTime;
+        Vector3 delta = (current_mousePos - init_mousePos) * Time.deltaTime * speed;
+        Debug.Log(delta);
 
         // Compute new position beforehand
-        Vector3 new_pos = rb.position + new Vector3(-delta.y, 0f, delta.x);
+        Vector3 new_pos = rb.position + new Vector3(delta.x, 0f, delta.y);
 
         // Check barrier in x-dir
         if (new_pos.x <= max_x & new_pos.x >= min_x)
@@ -210,7 +214,7 @@ public class Slingshot : MonoBehaviour
         init_y = rb.transform.position.y;
 
         // Default distance to origin on interaction. Prevents unwanted movement.
-        transform.Translate(Vector3.forward * offset, Space.Self);
+        transform.Translate(-Vector3.forward * offset, Space.Self);
     }
 
     private void OnMouseUp()
