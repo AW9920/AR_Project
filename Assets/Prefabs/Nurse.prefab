@@ -1088,7 +1088,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   endPoint: {fileID: 0}
   main: {fileID: 0}
-  move_speed: 15
+  move_speed: 1
 --- !u!1 &2629889911763255196
 GameObject:
   m_ObjectHideFlags: 0

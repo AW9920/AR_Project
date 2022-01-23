@@ -61,7 +61,7 @@ public class ObstacleHandler : MonoBehaviour
         if (isDestroyed)
         {
             startTime = Time.time;
-            randSpawnTime = (float) Random.Range(3, 10);
+            randSpawnTime = (float) Random.Range(1, 4);
         }
     }
 }

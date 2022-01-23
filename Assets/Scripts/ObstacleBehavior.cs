@@ -17,7 +17,7 @@ public class ObstacleBehavior : MonoBehaviour
     private float startTime;
     private float LifeTimeOfObject = 1.0f;
     private float maxDist;
-    public float move_speed = 1f;
+    private float move_speed = 1.0f;
     private float speed_variation;
     private bool isHit;
 
