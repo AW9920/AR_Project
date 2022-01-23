@@ -47,6 +47,7 @@ public class Slingshot : MonoBehaviour
     private Vector3 init_mousePos;
     private Vector3 proj_init_y;
     private Collision target;
+    private Touch touch;
 
     private void Awake()
     {
@@ -127,47 +128,51 @@ public class Slingshot : MonoBehaviour
     private void DragBall()
     {
         // Convert mouse movement info relativ to Camera transform
-        Vector3 current_mousePos = Input.mousePosition;
-        Vector3 delta = (current_mousePos - init_mousePos) * Time.deltaTime * speed;
-        Debug.Log(delta);
-
-        // Compute new position beforehand
-        Vector3 new_pos = rb.position + new Vector3(delta.x, 0f, delta.y);
-
-        // Check barrier in x-dir
-        if (new_pos.x <= max_x & new_pos.x >= min_x)
+        if(Input.touchCount > 0)
         {
-            rb.position = new Vector3(new_pos.x, init_y, rb.position.z);    
-        }
+                touch = Input.GetTouch(0);
 
-        else if (new_pos.x > max_x) 
-        {
-            rb.position = new Vector3(max_x, init_y, rb.position.z);
-        }
+                Vector3 delta = new Vector3(
+                    touch.deltaPosition.x * Time.deltaTime * speed,
+                    0.0f,
+                    touch.deltaPosition.y * Time.deltaTime * speed
+                );
 
-        else 
-        {
-            rb.position = new Vector3(min_x, init_y, rb.position.z);
-        }
+            // Compute new position beforehand
+            Vector3 new_pos = rb.position + delta;
 
-        // Check barrier in z-dir
-        if (new_pos.z <= max_z & new_pos.z >= min_z) 
-        {
-            rb.position = new Vector3(rb.position.x, init_y, new_pos.z);
-        }
+            // Check barrier in x-dir
+            if (new_pos.x <= max_x & new_pos.x >= min_x)
+            {
+                rb.position = new Vector3(new_pos.x, init_y, rb.position.z);    
+            }
 
-        else if (new_pos.z > max_z)
-        {
-            rb.position = new Vector3(rb.position.x, init_y, max_z);
-        }
+            else if (new_pos.x > max_x) 
+            {
+                rb.position = new Vector3(max_x, init_y, rb.position.z);
+            }
 
-        else 
-        {
-            rb.position = new Vector3(rb.position.x, init_y, min_z);
-        }
+            else 
+            {
+                rb.position = new Vector3(min_x, init_y, rb.position.z);
+            }
 
-        // Update mouse position
-        init_mousePos = current_mousePos;
+            // Check barrier in z-dir
+            if (new_pos.z <= max_z & new_pos.z >= min_z) 
+            {
+                rb.position = new Vector3(rb.position.x, init_y, new_pos.z);
+            }
+
+            else if (new_pos.z > max_z)
+            {
+                rb.position = new Vector3(rb.position.x, init_y, max_z);
+            }
+
+            else 
+            {
+                rb.position = new Vector3(rb.position.x, init_y, min_z);
+            }
+        }
     }
 
 
@@ -209,8 +214,6 @@ public class Slingshot : MonoBehaviour
         rb.isKinematic = true;
         rb.useGravity = false;
 
-        // Get mouse position
-        init_mousePos = Input.mousePosition;
         init_y = rb.transform.position.y;
 
         // Default distance to origin on interaction. Prevents unwanted movement.
