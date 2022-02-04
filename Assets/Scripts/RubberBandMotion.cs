@@ -35,9 +35,10 @@ public class RubberBandMotion : MonoBehaviour
     private void CreateShape(Transform anc)
     {
         // Vector Pillar left to Bed right
-
-        Vector3 dir = transform.parent.InverseTransformPoint(anc.position) - transform.parent.InverseTransformPoint(transform.position);
-        float length = dir.magnitude;
+        Vector3 dir = anc.position - transform.position;
+        float length = (transform.parent.InverseTransformPoint(anc.position) -
+                    transform.parent.InverseTransformPoint(transform.position)).magnitude;
+        Debug.DrawLine(transform.position, anc.position, Color.red, Time.deltaTime);
 
         // Rotate towards Ancor
         Quaternion rot = Quaternion.FromToRotation(Vector3.forward, dir);
@@ -48,7 +49,7 @@ public class RubberBandMotion : MonoBehaviour
         GetComponent<MeshFilter>().mesh = mesh;
 
         // Determine direction to render mesh
-        Vector3 relative = Vector3.Scale(Vector3.forward, dir).normalized;
+        Vector3 relative = Vector3.Scale(transform.parent.InverseTransformVector(dir), Vector3.right).normalized;
 
         // Create Meshes
         vertices = new Vector3[]
@@ -59,7 +60,7 @@ public class RubberBandMotion : MonoBehaviour
             new Vector3(0, width/2, length)
         };
 
-        if(relative.z > 0)
+        if(relative.x > 0)
         {
             triangles = new int[]
             {
@@ -84,25 +85,30 @@ public class RubberBandMotion : MonoBehaviour
     void CreateShapeWhole()
     {
         // Vector Pillar left to Bed right
-        Vector3 dir = transform.parent.InverseTransformPoint(op_Pillar.position) - transform.parent.InverseTransformPoint(transform.position);
-        float length = dir.magnitude;
+        Vector3 dir = op_Pillar.position - transform.position;
+        float length = (transform.parent.InverseTransformPoint(op_Pillar.position) -
+                        transform.parent.InverseTransformPoint(transform.position)).magnitude;
         //Debug.Log(length);
 
-        transform.rotation = Quaternion.identity;
+        // Point towards opposing pillar
+        Quaternion rot = Quaternion.FromToRotation(Vector3.forward, dir);
+        rot.eulerAngles = new Vector3(rot.eulerAngles.x, rot.eulerAngles.y, 0f);
+        this.transform.rotation = rot;
 
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
 
         // Determine direction to render mesh
-        Vector3 relative = Vector3.Scale(Vector3.right, dir).normalized;
+        Vector3 relative = Vector3.Scale(transform.parent.InverseTransformVector(dir), Vector3.right).normalized;
+        Debug.Log(relative);
 
         // Create Meshes
         vertices = new Vector3[]
         {
             new Vector3(0, -width/2, 0),
             new Vector3(0, width/2, 0),
-            new Vector3(length * relative.x, -width/2, 0),
-            new Vector3(length * relative.x, width/2, 0)
+            new Vector3(0, -width/2, length),
+            new Vector3(0, width/2, length)
         };
 
         // flip array if rendered against z-axis
