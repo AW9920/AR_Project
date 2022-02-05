@@ -18,15 +18,15 @@ public class Slingshot : MonoBehaviour
     public float dragFriction = 0.0f;
     [SerializeField]
     private float offset = 0.2f;
-    private float max_z = 0.0f;
-    private float min_z = -2.0f;
+    private float min_z = 0.0f;
+    private float max_z = 2.0f;
     private float max_x;
     private float min_x;
     private float startTime;
     private float LifeTimeOfObject = 3.0f;
     private float release_dist;
     [SerializeField]
-    private float speed = 1.0f;
+    private float speed = 10.0f;
 
 
     private float init_y;
@@ -41,7 +41,6 @@ public class Slingshot : MonoBehaviour
     private Transform proj;
     private Rigidbody rb;
     private SpringJoint sp;
-    private Transform[] pillars;
     private SphereCollider col;
     private MainGameLoop css;
     private Vector3 init_mousePos;
@@ -70,21 +69,16 @@ public class Slingshot : MonoBehaviour
 
         // Set boundaries
         GameObject[] obj_pillars = GameObject.FindGameObjectsWithTag("Pillar");
-        pillars = new Transform[obj_pillars.Length]; 
+        Transform[] pillars = new Transform[obj_pillars.Length]; 
         for(int i = 0; i < pillars.Length; i++) 
             pillars[i] = obj_pillars[i].GetComponent<Transform>();
         
-        if(pillars[0].position.x > pillars[1].position.x)
-        {
-            max_x = pillars[0].position.x * scaling_boundary;
-            min_x = pillars[1].position.x * scaling_boundary;
-        }
-        else
-        {
-            max_x = pillars[1].position.x * scaling_boundary;
-            min_x = pillars[0].position.x * scaling_boundary;
-        }
-        Debug.Log(new Vector2(min_x,max_x));
+        // Compute boundaries for projectile
+        CalcBoundsX(pillars, out max_x, out min_x);
+        CalcBoundsZ(out max_z, out min_z);
+
+        Debug.Log(new Vector2(min_x, max_x));
+        Debug.Log(new Vector2(min_z, max_z));
 
         //Access Main loop
         css.proj_exist = true;
@@ -128,49 +122,53 @@ public class Slingshot : MonoBehaviour
     private void DragBall()
     {
         // Convert mouse movement info relativ to Camera transform
-        if(Input.touchCount > 0)
+        if(true)
         {
-                touch = Input.GetTouch(0);
+            // For Smartphone application
+            //Vector3 new_pos = DragWithTouchPos();
+            
+            // For Desktop application (Debugging)
+            Vector3 new_pos = DragWithMousePos(); 
 
-                Vector3 delta = new Vector3(
-                    touch.deltaPosition.x * Time.deltaTime * speed,
-                    0.0f,
-                    touch.deltaPosition.y * Time.deltaTime * speed
-                );
-
-            // Compute new position beforehand
-            Vector3 new_pos = rb.position + delta;
+            // Convert rigidbody position from world to local relative to partent
+            Vector3 rb_local_pos = rbWorld2Local(rb.position);
 
             // Check barrier in x-dir
             if (new_pos.x <= max_x & new_pos.x >= min_x)
             {
-                rb.position = new Vector3(new_pos.x, init_y, rb.position.z);    
+                rb.position = transform.parent.TransformPoint(new Vector3(new_pos.x, init_y, rb_local_pos.z)); 
+                UpdateLocalPos(rb.position, out rb_local_pos);  
             }
 
             else if (new_pos.x > max_x) 
             {
-                rb.position = new Vector3(max_x, init_y, rb.position.z);
+                rb.position = transform.parent.TransformPoint(new Vector3(max_x, init_y, rb_local_pos.z));
+                UpdateLocalPos(rb.position, out rb_local_pos);
             }
 
             else 
             {
-                rb.position = new Vector3(min_x, init_y, rb.position.z);
+                rb.position = transform.parent.TransformPoint(new Vector3(min_x, init_y, rb_local_pos.z));
+                UpdateLocalPos(rb.position, out rb_local_pos);
             }
 
             // Check barrier in z-dir
             if (new_pos.z <= max_z & new_pos.z >= min_z) 
             {
-                rb.position = new Vector3(rb.position.x, init_y, new_pos.z);
+                rb.position = transform.parent.TransformPoint(new Vector3(rb_local_pos.x, init_y, new_pos.z));
+                UpdateLocalPos(rb.position, out rb_local_pos);
             }
 
             else if (new_pos.z > max_z)
             {
-                rb.position = new Vector3(rb.position.x, init_y, max_z);
+                rb.position = transform.parent.TransformPoint(new Vector3(rb_local_pos.x, init_y, max_z));
+                UpdateLocalPos(rb.position, out rb_local_pos);
             }
 
             else 
             {
-                rb.position = new Vector3(rb.position.x, init_y, min_z);
+                rb.position = transform.parent.TransformPoint(new Vector3(rb_local_pos.x, init_y, min_z));
+                UpdateLocalPos(rb.position, out rb_local_pos);
             }
         }
     }
@@ -214,10 +212,12 @@ public class Slingshot : MonoBehaviour
         rb.isKinematic = true;
         rb.useGravity = false;
 
+        init_mousePos = Input.mousePosition;    //Drag ball with mouse 
+
         init_y = rb.transform.position.y;
 
         // Default distance to origin on interaction. Prevents unwanted movement.
-        transform.Translate(-Vector3.forward * offset, Space.Self);
+        transform.Translate(Vector3.back * offset, Space.Self);
     }
 
     private void OnMouseUp()
@@ -250,5 +250,90 @@ public class Slingshot : MonoBehaviour
         {
             css.isHit = false;
         }
+    }
+
+    private Vector3 DragWithMousePos()
+    {
+        Vector3 current_mousePos = Input.mousePosition;
+        Vector3 delta = (current_mousePos - init_mousePos) * Time.deltaTime * speed;
+
+        // Compute new position beforehand
+        Vector3 new_pos = transform.parent.InverseTransformPoint(rb.position) + new Vector3(delta.x, 0f, delta.y);
+
+        // Update mouse position
+        init_mousePos = current_mousePos;
+        
+        return new_pos;
+    }
+
+    private Vector3 DragWithTouchPos()
+    {
+        touch = Input.GetTouch(0);
+
+        Vector3 delta = new Vector3(
+            touch.deltaPosition.x * Time.deltaTime * speed,
+            0.0f,
+            touch.deltaPosition.y * Time.deltaTime * speed
+        );
+
+        // Compute new position beforehand
+        Vector3 new_pos = transform.parent.InverseTransformPoint(rb.position) + delta;
+
+        return new_pos;
+    }
+
+    private void CalcBoundsX(Transform[] pil, out float max, out float min)
+    {
+        float dist;
+        Vector3 dir;
+
+        if(pil[0].position.x > pil[1].position.x)
+        {
+            dist = transform.parent.InverseTransformPoint(pil[0].position).magnitude;
+            dir = (pil[0].position - transform.parent.position).normalized;
+            max = Vector3.Scale(dir, dist * Vector3.right).x;
+
+            dist = transform.parent.InverseTransformPoint(pil[1].position).magnitude;
+            dir = (pil[1].position - transform.parent.position).normalized;
+            min = Vector3.Scale(dir, dist * Vector3.right).x;
+        }
+        else
+        {
+            dist = transform.parent.InverseTransformPoint(pil[0].position).magnitude;
+            dir = (pil[1].position - transform.parent.position).normalized;
+            max = Vector3.Scale(dir, dist * Vector3.right).x;
+
+            dist = transform.parent.InverseTransformPoint(pil[1].position).magnitude;
+            dir = (pil[0].position - transform.parent.position).normalized;
+            min = Vector3.Scale(dir, dist * Vector3.right).x;
+        }
+    }
+
+        private void CalcBoundsZ(out float max, out float min)
+    {
+        float max_p = transform.parent.InverseTransformPoint(transform.parent.position + Vector3.back * max_z).z;
+        float min_p = transform.parent.InverseTransformPoint(transform.parent.position + Vector3.back * min_z).z;
+
+        if (max_p < min_p)
+        {
+            max = min_p; 
+            min = max_p;
+        }
+        else 
+        {
+            max = max_p;
+            min = min_p;
+        }
+    }
+
+    private Vector3 rbWorld2Local(Vector3 world_pos)
+    {
+        Vector3 local_pos = transform.parent.InverseTransformPoint(world_pos);
+        return local_pos;
+    }
+
+    private void UpdateLocalPos(Vector3 oldPos, out Vector3 newPos)
+    {
+        newPos = transform.parent.InverseTransformPoint(oldPos);
     }
 }

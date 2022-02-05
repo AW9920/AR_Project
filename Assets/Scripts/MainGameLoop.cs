@@ -90,7 +90,7 @@ public class MainGameLoop : MonoBehaviour
     protected void InitiateProjectile()
     {
         //Quaternion rot_z = Quaternion.AngleAxis(90f, Vector3.up);
-        Quaternion rot = this.transform.rotation * Quaternion.AngleAxis(180, transform.InverseTransformVector(transform.up));
+        Quaternion rot = this.transform.rotation;
         Vector3 pos = this.transform.position;
 
         // Instantiate new projectile & add to hierarchy
