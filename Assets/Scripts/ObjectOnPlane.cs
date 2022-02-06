@@ -14,6 +14,7 @@ public class ObjectOnPlane : MonoBehaviour
     private GameObject spawnedObject;
 
     public GameObject PlaceablePrefab;
+    public Camera cam;
 
     static List<ARRaycastHit> s_Hits = new List<ARRaycastHit>();
 
@@ -33,8 +34,11 @@ public class ObjectOnPlane : MonoBehaviour
         if (raycastMang.Raycast(touchPosition, s_Hits, TrackableType.PlaneWithinPolygon))
         {
             var hitPos = s_Hits[0].pose;
+
             if (spawnedObject == null)
             {
+                
+
                 spawnedObject = Instantiate(PlaceablePrefab, hitPos.position, hitPos.rotation);
                 SetAllPlanesActive(false);
             }

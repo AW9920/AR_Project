@@ -200,6 +200,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlaceablePrefab: {fileID: 4875564333662916611, guid: 0f0dd93c52c72d445bfb54c00bd17d64,
     type: 3}
+  cam: {fileID: 1099345341}
 --- !u!114 &104272214
 MonoBehaviour:
   m_ObjectHideFlags: 0
