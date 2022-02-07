@@ -37,9 +37,14 @@ public class ObjectOnPlane : MonoBehaviour
             
             if (spawnedObject == null)
             {
-                
+                Quaternion rot = new Quaternion(
+                    hitPos.rotation.x, 
+                    hitPos.rotation.y, 
+                    cam.transform.rotation.z, 
+                    hitPos.rotation.w
+                );
 
-                spawnedObject = Instantiate(PlaceablePrefab, hitPos.position, cam.transform.rotation);
+                spawnedObject = Instantiate(PlaceablePrefab, hitPos.position, rot);
                 SetAllPlanesActive(false);
             }
             
