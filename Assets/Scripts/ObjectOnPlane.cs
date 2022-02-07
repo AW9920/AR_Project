@@ -34,12 +34,12 @@ public class ObjectOnPlane : MonoBehaviour
         if (raycastMang.Raycast(touchPosition, s_Hits, TrackableType.PlaneWithinPolygon))
         {
             var hitPos = s_Hits[0].pose;
-
+            
             if (spawnedObject == null)
             {
                 
 
-                spawnedObject = Instantiate(PlaceablePrefab, hitPos.position, hitPos.rotation);
+                spawnedObject = Instantiate(PlaceablePrefab, hitPos.position, cam.transform.rotation);
                 SetAllPlanesActive(false);
             }
             
