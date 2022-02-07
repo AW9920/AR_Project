@@ -36,15 +36,14 @@ public class ObjectOnPlane : MonoBehaviour
             var hitPos = s_Hits[0].pose;
             
             if (spawnedObject == null)
-            {
-                Quaternion rot = new Quaternion(
+            {   
+                Vector3 rot = new Vector3(
                     hitPos.rotation.x,  
-                    cam.transform.rotation.y, 
-                    hitPos.rotation.z,
-                    hitPos.rotation.w
+                    cam.transform.rotation.eulerAngles.y, 
+                    hitPos.rotation.z
                 );
 
-                spawnedObject = Instantiate(PlaceablePrefab, hitPos.position, rot);
+                spawnedObject = Instantiate(PlaceablePrefab, hitPos.position, Quaternion.Euler(rot));
                 SetAllPlanesActive(false);
             }
             
