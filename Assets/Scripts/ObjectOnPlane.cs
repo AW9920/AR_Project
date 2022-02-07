@@ -38,9 +38,9 @@ public class ObjectOnPlane : MonoBehaviour
             if (spawnedObject == null)
             {
                 Quaternion rot = new Quaternion(
-                    hitPos.rotation.x, 
-                    hitPos.rotation.y, 
-                    cam.transform.rotation.z, 
+                    hitPos.rotation.x,  
+                    cam.transform.rotation.y, 
+                    hitPos.rotation.z,
                     hitPos.rotation.w
                 );
 
